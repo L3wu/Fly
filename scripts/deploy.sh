@@ -27,6 +27,13 @@ cd "$(dirname "$0")/.."
 echo "=== [1/3] 抓取 $TARGET_DATE 新闻联播 ==="
 python run_daily.py "$TARGET_DATE"
 
+# 同步前端文件到仓库根（GitHub Pages 根部署需要 index.html 在根目录）
+echo "=== [1.5/3] 同步前端文件到仓库根 ==="
+cp frontend/index.html index.html
+cp frontend/style.css style.css
+cp frontend/app.js app.js
+cp frontend/data.js data.js
+
 # 配置 git 用户（首次提交需要）
 if ! git config user.email >/dev/null 2>&1; then
     git config user.email "workbuddy@local"
@@ -34,7 +41,7 @@ if ! git config user.email >/dev/null 2>&1; then
 fi
 
 echo "=== [2/3] git add + commit ==="
-git add data/ frontend/ collector/ scripts/ run_daily.py README.md .gitignore package.json 2>/dev/null || true
+git add data/ frontend/ collector/ scripts/ run_daily.py README.md .gitignore package.json index.html style.css app.js data.js 2>/dev/null || true
 git status --short
 if git diff --cached --quiet; then
     echo "无变更，跳过提交"

@@ -272,9 +272,11 @@ def gen_frontend_data():
         "const DAILY_INDEX = " + json.dumps(index, ensure_ascii=False) + ";\n"
         "const DAILY_MAP = " + json.dumps(daily_map, ensure_ascii=False) + ";\n"
     )
-    out = BASE_DIR / "frontend" / "data.js"
-    out.write_text(js, encoding="utf-8")
-    return out
+    # 同时输出到 frontend/data.js 和仓库根 data.js（GitHub Pages 根部署）
+    outs = [BASE_DIR / "frontend" / "data.js", BASE_DIR / "data.js"]
+    for out in outs:
+        out.write_text(js, encoding="utf-8")
+    return outs[0]
 
 
 def export_pending_for_data(data):

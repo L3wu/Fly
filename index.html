@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新闻联播 · 世界地图版</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <h1>新闻联播<span class="brand-sub">世界地图版</span></h1>
+    </div>
+    <nav class="date-tabs" id="dateTabs" aria-label="日期切换"></nav>
+  </div>
+</header>
+
+<main class="app-main">
+  <!-- 左：要闻列表 -->
+  <section class="panel list-panel" aria-label="要闻列表">
+    <div class="panel-head">
+      <h2 id="listTitle">今日要闻</h2>
+      <div class="filters" id="categoryFilter">
+        <button class="chip active" data-cat="all">全部</button>
+        <button class="chip" data-cat="头条">头条</button>
+        <button class="chip" data-cat="国内">国内</button>
+        <button class="chip" data-cat="国际">国际</button>
+        <button class="chip" data-cat="快讯">快讯</button>
+      </div>
+    </div>
+    <div class="legend-keywords" id="legendKeywords"></div>
+    <div class="news-list" id="newsList" aria-live="polite"></div>
+    <div class="list-empty" id="listEmpty" hidden>该类别暂无要闻</div>
+  </section>
+
+  <!-- 右：世界地图 -->
+  <section class="panel map-panel" aria-label="世界地图">
+    <div class="panel-head">
+      <h2>世界地图 · 点击地区查看要闻</h2>
+      <div class="map-actions">
+        <button class="btn-ghost" id="btnReset" title="回到全貌">回到全貌</button>
+      </div>
+    </div>
+    <div class="map-wrap" id="mapWrap">
+      <svg id="worldMap" viewBox="0 0 960 480" preserveAspectRatio="xMidYMid meet" role="img"
+           aria-label="世界地图，圆点标注当日新闻地区">
+        <path id="landPath" fill="#1a2740" stroke="#2d4a66" stroke-width="0.5"></path>
+        <g id="countryHighlights"></g>
+        <g id="mapPoints"></g>
+        <g id="mapLabels"></g>
+      </svg>
+      <div class="map-tooltip" id="mapTooltip" hidden></div>
+    </div>
+    <div class="map-legend">
+      <span class="lg"><i class="dot dot-domestic"></i>国内</span>
+      <span class="lg"><i class="dot dot-intl"></i>国际</span>
+      <span class="lg"><i class="dot dot-headline"></i>头条</span>
+      <span class="lg"><i class="dot dot-flash"></i>快讯</span>
+      <span class="lg-muted">圆点大小 = 该地区要闻数</span>
+    </div>
+    <div class="region-cards" id="regionCards"></div>
+  </section>
+</main>
+
+<template id="newsItemTpl">
+  <article class="news-card">
+    <div class="card-top">
+      <span class="cat-badge"></span>
+      <span class="card-length"></span>
+    </div>
+    <h3 class="card-title"></h3>
+    <div class="key-points"></div>
+    <p class="card-summary"></p>
+    <div class="card-regions"></div>
+    <button class="card-toggle" aria-expanded="false">
+      <span class="toggle-label">展开详情</span><span class="toggle-arrow"></span>
+    </button>
+    <div class="card-detail" hidden>
+      <div class="detail-meta"></div>
+      <div class="detail-image"></div>
+      <div class="keyword-cloud"></div>
+      <div class="detail-body"></div>
+      <div class="detail-regions"></div>
+      <button class="next-news-btn" hidden>
+        <span class="next-label">接着看：</span>
+        <span class="next-title"></span>
+        <span class="next-arrow">→</span>
+      </button>
+    </div>
+  </article>
+</template>
+
+<template id="regionCardTpl">
+  <div class="region-card">
+    <div class="rc-head"><span class="rc-name"></span><span class="rc-count"></span></div>
+    <ul class="rc-items"></ul>
+  </div>
+</template>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
