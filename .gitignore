@@ -1,0 +1,30 @@
+# 依赖
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+
+# 渲染产物（截图）
+renders/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.swp
+
+# 临时文件
+*.log
+.env
+.env.local
+
+# 构建产物（无需提交，由 collector/build_page.py 重新生成）
+# data/world-map.json   # 由 scripts/build_world_map.mjs 生成，需提交
+# data/index.json       # 提交（含日期索引）
+# data/briefings/       # 提交（含每日简报）
+# data/pending.json     # 提交（待补充清单）
+# frontend/data.js      # 提交（前端数据，含离线浏览所需全部内容）
+# 注意：data/briefings/*.json + frontend/data.js 必须提交，否则 GitHub Pages 部署后无内容
+
+# IDE
+.vscode/
+.idea/

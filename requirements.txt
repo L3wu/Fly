@@ -1,0 +1,2 @@
+requests
+beautifulsoup4  # 备用，当前用 urllib 直接抓
