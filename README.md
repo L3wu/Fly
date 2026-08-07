@@ -38,7 +38,7 @@
 | **采集** | Python 3（标准库 `urllib`/`re`/`json`） | 零第三方依赖，抓取央视网栏目页 + 官方内容 API |
 | **地图数据** | Node.js + `world-atlas` + `d3-geo` + `topojson-client` | Natural Earth 110m 国界 → 等距圆柱投影 SVG path |
 | **前端** | 原生 HTML5 / CSS3 / JavaScript（ES6） | 零框架、零 CDN、零外部依赖 |
-| **数据交换** | JSON + `frontend/data.js`（全局常量注入） | 浏览器直接读取，无需后端 |
+| **数据交换** | JSON + `data.js`（全局常量注入） | 浏览器直接读取，无需后端（根目录 + frontend/ 双输出） |
 | **部署** | Git + GitHub Pages | `scripts/deploy.sh` 一键构建推送 |
 | **自动化** | WorkBuddy 自动化 / cron 定时任务 | 每天定时执行 `run_daily.py` |
 
@@ -155,6 +155,10 @@ python -m http.server 8765 -d frontend
 ```
 daily-news/
 ├── run_daily.py                 # 每日入口（抓取→处理→生成→部署）
+├── index.html                   # 主页面（GitHub Pages 根部署）
+├── style.css                    # 深色科技风样式
+├── app.js                       # 交互逻辑
+├── data.js                      # 自动生成 · 内嵌地图 + 简报（根 + frontend/）
 ├── package.json                 # Node 依赖（地图数据构建）
 ├── requirements.txt             # Python 依赖（当前为零第三方依赖）
 ├── README.md                    # 本文档
