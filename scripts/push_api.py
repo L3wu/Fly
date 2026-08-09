@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# push_api.py — 通过 GitHub REST Contents API 把工作区文件同步到远程仓库
+# push_api.py — 通过 GitHub REST API 把工作区文件同步到远程仓库
 #
 # 背景：本机存在透明 TLS 拦截代理，会把 git 智能 HTTP 的 push/fetch 一律 reset，
-#       且沙箱环境会杀掉 git 子进程（git hash-object 等）。因此：
+#       且沙箱环境会杀掉 git 子进程。因此：
 #         - 不用 git push，改用 GitHub REST API 上传（api.github.com 放行）
 #         - 不调用任何 git 子进程：blob sha 用纯 Python 算、token 直接读 .git/config
 #         - 远程 sha 用一次 git/trees 接口批量取回，把 N 次 GET 降到 1 次
@@ -42,7 +42,6 @@ def repo_root():
 
 def parse_remote(root):
     global TOKEN, REPO
-    # 优先环境变量
     tok = os.environ.get('GITHUB_TOKEN')
     cfg_path = os.path.join(root, '.git', 'config')
     url = None
@@ -75,12 +74,13 @@ def parse_remote(root):
     })
 
 
-def api(method, path, data=None, retries=6):
+def api(method, endpoint, data=None, retries=6):
+    """endpoint 为 /repos/{repo}/ 之后的部分（如 'contents/x' 或 'git/trees/main'）。"""
     last = None
     for i in range(retries):
         try:
             req = urllib.request.Request(
-                'https://api.github.com/repos/%s/contents/%s' % (REPO, path),
+                'https://api.github.com/repos/%s/%s' % (REPO, endpoint),
                 data=data, headers=HDR, method=method)
             r = urllib.request.urlopen(req, timeout=45, context=ctx)
             return r.status, r.read()
@@ -96,24 +96,21 @@ def api(method, path, data=None, retries=6):
 
 
 def get_remote_tree_shas():
-    """一次调用取回远程 main 分支完整文件树（path -> blob sha）。"""
+    """一次调用取回远程默认分支完整文件树（path -> blob sha）。"""
     out = {}
-    for _ in range(4):
-        try:
-            st, body = api('GET',
-                           'git/trees/main?recursive=1',
-                           retries=1)
-            if st == 404:
-                # 分支名不是 main，尝试 master
-                st, body = api('GET', 'git/trees/master?recursive=1', retries=1)
-            data = json.loads(body)
-            for e in data.get('tree', []):
-                if e.get('type') == 'blob':
-                    out[e['path']] = e['sha']
-            return out
-        except Exception:
-            time.sleep(1.5)
-    # 取不到树就返回空（所有文件都会走 PUT/创建，慢但能成）
+    for branch in ('main', 'master'):
+        for _ in range(4):
+            try:
+                st, body = api('GET', 'git/trees/%s?recursive=1' % branch, retries=1)
+                if st == 404:
+                    break
+                data = json.loads(body)
+                for e in data.get('tree', []):
+                    if e.get('type') == 'blob':
+                        out[e['path']] = e['sha']
+                return out
+            except Exception:
+                time.sleep(1.5)
     return out
 
 
@@ -129,7 +126,7 @@ def upload(path, content_b64, message, remote_sha):
     body = {'message': message, 'content': content_b64}
     if remote_sha:
         body['sha'] = remote_sha
-    st, _ = api('PUT', path, json.dumps(body).encode())
+    st, _ = api('PUT', 'contents/%s' % path, json.dumps(body).encode())
     return st
 
 
