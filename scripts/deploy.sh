@@ -37,20 +37,9 @@ cp frontend/style.css style.css
 cp frontend/app.js app.js
 cp frontend/data.js data.js
 
-# 配置 git 用户（仅本地提交记录；push 已改为 GitHub API 上传）
-if ! git config user.email >/dev/null 2>&1; then
-    git config user.email "workbuddy@local"
-    git config user.name "Daily News Bot"
-fi
-
-echo "=== [2/3] 本地 git 提交（仅本地记录，不推送）==="
-git add -A 2>/dev/null || true
-git status --short
-if git diff --cached --quiet; then
-    echo "无变更，跳过提交"
-else
-    git commit -m "update: $TARGET_DATE 简报" || true
-fi
+# 说明：本部署完全不依赖 git push（代理会 reset git 协议，且沙箱会杀 git 子进程）。
+# 部署通过 scripts/push_api.py 走 GitHub API 完成；如需本地 git 历史，可手动提交。
+echo "=== [2/3] 生成完成，进入 API 上传（不依赖 git）==="
 
 echo "=== [3/3] 通过 GitHub API 上传到远程（绕开 git push 被代理 reset）==="
 ok=0
