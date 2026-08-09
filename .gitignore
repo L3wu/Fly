@@ -23,3 +23,6 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# WorkBuddy 自动化系统写入（非项目内容，勿提交）
+.workbuddy/
