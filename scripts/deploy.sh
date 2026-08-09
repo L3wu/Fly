@@ -53,7 +53,18 @@ else
 fi
 
 echo "=== [3/3] 通过 GitHub API 上传到远程（绕开 git push 被代理 reset）==="
-"$PY" scripts/push_api.py "$TARGET_DATE"
+ok=0
+for i in 1 2 3; do
+    if "$PY" scripts/push_api.py "$TARGET_DATE"; then
+        ok=1; break
+    fi
+    echo "  push_api 第 $i 次未完全成功，3 秒后重试..."
+    sleep 3
+done
+if [ "$ok" -ne 1 ]; then
+    echo "✗ push_api 重试 3 次仍失败"
+    exit 1
+fi
 
 echo "✓ 完成！GitHub Pages 将在 1-2 分钟内自动更新"
 echo "  公网地址：https://l3wu.github.io/Fly/"
